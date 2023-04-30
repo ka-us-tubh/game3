@@ -325,7 +325,7 @@ pd.src = "pdown1.png";
 
 const audio={
   Map:new Howl({
-    src: 'map.wav',
+    src: 'map2.mp3',
     html5:true
 
   })
