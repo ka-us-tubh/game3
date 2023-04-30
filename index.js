@@ -454,7 +454,6 @@ function animate() {
     renderable.draw()
   })
   
-  foreground.draw();
   let moving = true;
   player.animate=false
 
