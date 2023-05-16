@@ -342,7 +342,7 @@ const player = new Sprite({
   image: pd,
   frames: {
     max: 4,
-    hold: 10,
+    hold: 15,
   },
   sprites: {
    up: pu,
