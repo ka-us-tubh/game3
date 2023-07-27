@@ -28,7 +28,7 @@ class Raindrop {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.speed = getRandom(5, 8);
+    this.speed = getRandom(6, 9);
     this.length = getRandom(10, 20);
   }
 
