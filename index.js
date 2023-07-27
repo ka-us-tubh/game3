@@ -19,6 +19,58 @@ for (let i = 0; i < charactersMapData.length; i += 140) {
 }
 
 
+// Function to generate random number within a range
+function getRandom(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+class Raindrop {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.speed = getRandom(5, 8);
+    this.length = getRandom(10, 20);
+  }
+
+  draw() {
+    c.strokeStyle = "lightblue";
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(this.x, this.y);
+    c.lineTo(this.x, this.y + this.length);
+    c.stroke();
+  }
+
+  update() {
+    this.y += this.speed;
+    if (this.y - this.length > canvas.height) {
+      this.y = getRandom(-50, -10);
+    }
+    this.draw();
+  }
+}
+
+// Array to store raindrops
+const raindrops = [];
+for (let i = 0; i < 100; i++) {
+  raindrops.push(new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height)));
+}
+
+// Function to draw raindrops
+function drawRaindrops() {
+  raindrops.forEach((raindrop) => {
+    raindrop.draw();
+  });
+}
+
+// Function to update raindrops
+function updateRaindrops() {
+  raindrops.forEach((raindrop) => {
+    raindrop.update();
+  });
+}
+
+
 
 class Sprite {
   constructor({
@@ -450,11 +502,18 @@ const battle = {
 }
 function animate() {
   const animationId=window.requestAnimationFrame(animate);
+  // Draw and update raindrops
+   c.clearRect(0, 0, canvas.width, canvas.height);
   renderables.forEach((renderable) => {
     renderable.draw()
   })
   
   foreground.draw();
+   // Draw raindrops separately
+    drawRaindrops();
+  
+    // Update raindrops separately
+    updateRaindrops();
   let moving = true;
   player.animate=false
 
