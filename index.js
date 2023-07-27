@@ -52,7 +52,7 @@ class Raindrop {
 
 // Array to store raindrops
 const raindrops = [];
-for (let i = 0; i < 70; i++) {
+for (let i = 0; i < 50; i++) {
   raindrops.push(new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height)));
 }
 
