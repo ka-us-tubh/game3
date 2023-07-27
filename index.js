@@ -759,6 +759,10 @@ window.addEventListener("click",()=>{
     clicked=true
 
   }
+  else {
+    audio.Map.pause();
+    clicked = false;
+  }
 
 
 })
