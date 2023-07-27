@@ -43,7 +43,7 @@ class Raindrop {
 
   update() {
     this.y += this.speed;
-    if (this.y - this.length > canvas.height) {
+    if (this.y - this.length >  Math.random()*100000) {
       this.y = getRandom(-50, -10);
     }
     this.draw();
