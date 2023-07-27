@@ -34,7 +34,7 @@ class Raindrop {
 
   draw() {
     c.strokeStyle = "lightblue";
-    c.lineWidth = 1;
+    c.lineWidth = 2;
     c.beginPath();
     c.moveTo(this.x, this.y);
     c.lineTo(this.x, this.y + this.length);
