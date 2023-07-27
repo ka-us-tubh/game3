@@ -34,7 +34,7 @@ class Raindrop {
 
   draw() {
     c.strokeStyle = "lightblue";
-    c.lineWidth = 2;
+    c.lineWidth = 3;
     c.beginPath();
     c.moveTo(this.x, this.y);
     c.lineTo(this.x, this.y + this.length);
@@ -52,7 +52,7 @@ class Raindrop {
 
 // Array to store raindrops
 const raindrops = [];
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 70; i++) {
   raindrops.push(new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height)));
 }
 
