@@ -17,7 +17,43 @@ const charactersMap = []
 for (let i = 0; i < charactersMapData.length; i += 140) {
   charactersMap.push(charactersMapData.slice(i, 140 + i))
 }
+let currentTime = 0;
+function updateTimeAndVisuals() {
+  // Increase the current time (you can adjust the time increment as needed)
+  currentTime +=1;
+  if (currentTime > 24) {
+    currentTime = 0; // Reset time after a day has passed
+  }
 
+  // Adjust the background and lighting based on the time of day
+  if (currentTime >= 1 && currentTime < 6) {
+    // Daytime visuals
+     // Hide the day-night canvas during the day
+    canvas.style.opacity = 1; // Show the main canvas
+  } 
+  
+  else if (currentTime >= 6 && currentTime < 14) {
+    // Nighttime visuals
+     // Show the day-night canvas during the night
+    canvas.style.opacity = 0.7; // Reduce the main canvas opacity for a dimming effect
+   
+  }
+  else if (currentTime >= 14 && currentTime < 20) {
+    // Nighttime visuals
+     // Show the day-night canvas during the night
+    canvas.style.opacity = 0.4; // Reduce the main canvas opacity for a dimming effect
+
+  }
+  else{
+    // Nighttime visuals
+     // Show the day-night canvas during the night
+    canvas.style.opacity = 0.2; 
+    
+  }
+}
+
+// Call updateTimeAndVisuals every second using setInterval
+setInterval(updateTimeAndVisuals, 10000);
 
 // Function to generate random number within a range
 function getRandom(min, max) {
