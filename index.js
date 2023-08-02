@@ -26,19 +26,19 @@ function updateTimeAndVisuals() {
   }
 
   // Adjust the background and lighting based on the time of day
-  if (currentTime >= 1 && currentTime < 6) {
+  if (currentTime >= 1 && currentTime < 8) {
     // Daytime visuals
      // Hide the day-night canvas during the day
     canvas.style.opacity = 1; // Show the main canvas
   } 
   
-  else if (currentTime >= 6 && currentTime < 14) {
+  else if (currentTime >= 8 && currentTime < 16) {
     // Nighttime visuals
      // Show the day-night canvas during the night
     canvas.style.opacity = 0.7; // Reduce the main canvas opacity for a dimming effect
    
   }
-  else if (currentTime >= 14 && currentTime < 20) {
+  else if (currentTime >= 16 && currentTime < 20) {
     // Nighttime visuals
      // Show the day-night canvas during the night
     canvas.style.opacity = 0.4; // Reduce the main canvas opacity for a dimming effect
