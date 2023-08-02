@@ -53,7 +53,7 @@ function updateTimeAndVisuals() {
 }
 
 // Call updateTimeAndVisuals every second using setInterval
-setInterval(updateTimeAndVisuals, 10000);
+setInterval(updateTimeAndVisuals, 15000);
 
 // Function to generate random number within a range
 function getRandom(min, max) {
