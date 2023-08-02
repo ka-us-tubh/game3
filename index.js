@@ -64,7 +64,7 @@ class Raindrop {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.speed = getRandom(6, 10);
+    this.speed = getRandom(7, 10);
     this.length = getRandom(10, 20);
   }
 
@@ -88,7 +88,7 @@ class Raindrop {
 
 // Array to store raindrops
 const raindrops = [];
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 110; i++) {
   raindrops.push(new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height)));
 }
 
