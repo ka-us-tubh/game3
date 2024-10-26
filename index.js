@@ -26,7 +26,7 @@ function updateTimeAndVisuals() {
   }
 
   // Adjust the background and lighting based on the time of day
-  if (currentTime >= 1 && currentTime < 16) {
+  if (currentTime >= 0 && currentTime < 16) {
     // Daytime visuals
      // Hide the day-night canvas during the day
     canvas.style.opacity = 0.9; // Show the main canvas
