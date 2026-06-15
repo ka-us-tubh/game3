@@ -150,81 +150,33 @@ const raindrops = [];
 // boot with day — must be after raindrops is declared
 applyWeather('day')
 
-// Draw directional torch ray in front of player during night/storm
+// Draw torch/spotlight effect around player during night/storm
 function drawTorchEffect() {
   if (weatherMode === 'day' || weatherMode === 'rain') return
 
-  // player center
-  const pw = player.width  || 32
-  const ph = player.height || 48
-  const px = player.position.x + pw / 2
-  const py = player.position.y + ph / 2
+  const px = player.position.x + (player.width  || 32) / 2
+  const py = player.position.y + (player.height || 48) / 2
 
   const isNight = weatherMode === 'night'
-  const darkness = isNight ? 'rgba(0,0,15,0.92)' : 'rgba(2,4,18,0.80)'
+  const innerRadius = isNight ? 75  : 100
+  const outerRadius = isNight ? 190 : 260
+  const darkness    = isNight ? 'rgba(0,0,18,0.88)' : 'rgba(5,5,20,0.72)'
 
-  // ── direction the character faces ──────────────────────────
-  // lastkey: w=up, s=down, a=left, d=right  (default down)
-  const dirMap = { w: -Math.PI/2, s: Math.PI/2, a: Math.PI, d: 0 }
-  const facing = dirMap[lastkey] ?? Math.PI/2
-
-  const rayLen   = isNight ? 220 : 280   // how far the cone reaches
-  const halfAngle = Math.PI / 5          // 36° half-angle → 72° cone total
-
-  // ── full-screen dark overlay ───────────────────────────────
+  const grad = c.createRadialGradient(px, py, innerRadius * 0.25, px, py, outerRadius)
+  grad.addColorStop(0,    'rgba(0,0,0,0)')
+  grad.addColorStop(0.3,  'rgba(255,220,100,0.06)')
+  grad.addColorStop(1,    darkness)
   c.save()
-
-  // 1. fill entire screen dark
-  c.fillStyle = darkness
-  c.fillRect(0, 0, canvas.width, canvas.height)
-
-  // 2. cut out the torch cone using destination-out compositing
-  c.globalCompositeOperation = 'destination-out'
-
-  const tipX = px
-  const tipY = py
-  const coneEndX = px + Math.cos(facing) * rayLen
-  const coneEndY = py + Math.sin(facing) * rayLen
-
-  // cone tip gradient — bright at source, fades at tip
-  const grad = c.createRadialGradient(tipX, tipY, 2, tipX, tipY, rayLen)
-  grad.addColorStop(0,   'rgba(0,0,0,1)')    // fully cut out near player
-  grad.addColorStop(0.55,'rgba(0,0,0,0.85)')
-  grad.addColorStop(1,   'rgba(0,0,0,0)')    // fades out at cone tip
-
   c.fillStyle = grad
-  c.beginPath()
-  c.moveTo(tipX, tipY)
-  c.arc(tipX, tipY, rayLen, facing - halfAngle, facing + halfAngle)
-  c.closePath()
-  c.fill()
-
-  c.globalCompositeOperation = 'source-over'
-  c.restore()
-
-  // ── warm yellowish torch glow layered on top ───────────────
-  c.save()
-  const glowGrad = c.createRadialGradient(tipX, tipY, 0, tipX, tipY, rayLen * 0.9)
-  glowGrad.addColorStop(0,    'rgba(255,210,80,0.28)')   // hot yellow at torch
-  glowGrad.addColorStop(0.25, 'rgba(255,160,40,0.14)')   // orange mid
-  glowGrad.addColorStop(0.6,  'rgba(255,120,20,0.05)')
-  glowGrad.addColorStop(1,    'rgba(0,0,0,0)')
-
-  c.fillStyle = glowGrad
-  c.beginPath()
-  c.moveTo(tipX, tipY)
-  c.arc(tipX, tipY, rayLen * 0.9, facing - halfAngle, facing + halfAngle)
-  c.closePath()
-  c.fill()
-
-  // small warm halo right on the player body (held torch)
-  const halo = c.createRadialGradient(tipX, tipY, 0, tipX, tipY, 36)
-  halo.addColorStop(0,   'rgba(255,230,120,0.35)')
-  halo.addColorStop(0.5, 'rgba(255,180,60,0.12)')
-  halo.addColorStop(1,   'rgba(0,0,0,0)')
-  c.fillStyle = halo
   c.fillRect(0, 0, canvas.width, canvas.height)
 
+  // warm glow around player
+  const glowGrad = c.createRadialGradient(px, py, 0, px, py, innerRadius)
+  glowGrad.addColorStop(0,   'rgba(255,240,140,0.22)')
+  glowGrad.addColorStop(0.55,'rgba(255,200,80,0.08)')
+  glowGrad.addColorStop(1,   'rgba(0,0,0,0)')
+  c.fillStyle = glowGrad
+  c.fillRect(0, 0, canvas.width, canvas.height)
   c.restore()
 }
 
