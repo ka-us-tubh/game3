@@ -26,7 +26,17 @@
     }
 
     body {
-      background-color: #022a30;
+      background-color: #f0f0e8;
+      background-image:
+        linear-gradient(rgba(180,175,160,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180,175,160,0.4) 1px, transparent 1px);
+      background-size: 60px 60px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0;
     }
      canvas {
       image-rendering: pixelated;
@@ -52,13 +62,13 @@
 
 
         .console {
-            width: 1070px;
-            height: 750px;
+            width: 1100px;
+            height: 820px;
             background-color: yellow;
-            border-radius: 20px;
-            padding: 20px;
-            border:5px solid  #e37587;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            padding: 20px 28px 28px;
+            border: 5px solid #e37587;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
         }
         .screen {
             background-color: #000;
@@ -82,15 +92,18 @@
         .controls {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            align-items: center;
+            margin-top: 16px;
+            min-height: 190px;
+            padding: 0 12px;
         }
         .d-pad, .buttons {
             width: 120px;
             height: 120px;
-            background-color: #404040;
+            background-color: #d9d3c8;
             border-radius: 50%;
             position: relative;
-            border: 2px solid black;
+            border: 3px solid #b0a898;
         }
         .d-pad::before, .d-pad::after {
             content: '';
@@ -140,7 +153,11 @@
       width: 100px;
     } */
     button:hover {
-      background-color: #e90a0a;
+      background-color: inherit;
+    }
+    .wasd-btn:hover {
+      background-color: #2e2e2e !important;
+      color: #ffdd57;
     }
     .typewriter {
       overflow: hidden; /* Ensures the content is not revealed until the animation */
@@ -201,7 +218,7 @@
   <meta charset="UTF-8" />
 </head>
 <body>
-  <div class="main" style="display: inline-block; position: relative">
+  <div class="main" style="display: inline-block; position: relative; margin: 0 auto;">
     
 
 
@@ -336,119 +353,213 @@
         <button class="button">Back</button>
       </div>
     </div>
+
+    <!-- Instructions Panel — shown inside the screen -->
+    <div id="instructionsPanel" style="
+      background-color: #000;
+      height: 576px;
+      width: 1024px;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: none;
+      z-index: 20;
+      font-family: 'Press Start 2P', cursive;
+      overflow: hidden;
+      box-sizing: border-box;
+    ">
+      <!-- scanline overlay -->
+      <div style="position:absolute;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.15) 3px,rgba(0,0,0,0.15) 4px);"></div>
+
+      <div style="position:relative;z-index:2;padding:20px 32px 16px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;">
+
+        <!-- Title row -->
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ffdd57;padding-bottom:12px;margin-bottom:16px;">
+          <div style="color:#ffdd57;font-size:18px;letter-spacing:0.15em;text-shadow:0 0 12px #ffdd57;">HOW TO PLAY</div>
+          <button id="closeInstructionsPanel" style="background:#ffdd57;color:#000;border:3px solid #000;padding:7px 18px;font-size:9px;cursor:pointer;font-family:'Press Start 2P',cursive;letter-spacing:0.08em;box-shadow:3px 3px 0 #fff;">✕ CLOSE</button>
+        </div>
+
+        <!-- 2-column grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;">
+
+          <div style="display:flex;border:2px solid #333;">
+            <div style="color:#ffdd57;font-size:13px;padding:10px 14px;width:96px;flex-shrink:0;border-right:2px solid #333;display:flex;align-items:center;text-shadow:0 0 6px #ffdd57;">MOVE</div>
+            <div style="padding:10px 14px;color:#ccc;font-size:13px;line-height:2.2;">
+              <span style="color:#000;background:#ffdd57;padding:3px 10px;margin:0 2px;">W</span>
+              <span style="color:#000;background:#ffdd57;padding:3px 10px;margin:0 2px;">A</span>
+              <span style="color:#000;background:#ffdd57;padding:3px 10px;margin:0 2px;">S</span>
+              <span style="color:#000;background:#ffdd57;padding:3px 10px;margin:0 2px;">D</span>
+              <br>to walk around.
+            </div>
+          </div>
+
+          <div style="display:flex;border:2px solid #333;">
+            <div style="color:#9aff58;font-size:13px;padding:10px 14px;width:96px;flex-shrink:0;border-right:2px solid #333;display:flex;align-items:center;text-shadow:0 0 6px #9aff58;">PORTAL</div>
+            <div style="padding:10px 14px;color:#ccc;font-size:13px;line-height:2.2;display:flex;align-items:center;gap:12px;">
+              <span>Walk up &amp; press <span style="color:#000;background:#9aff58;padding:3px 10px;">Q</span></span>
+              <img src="portal.jpg" width="34" height="40" style="border:2px solid #9aff58;flex-shrink:0;" />
+            </div>
+          </div>
+
+          <div style="display:flex;border:2px solid #333;">
+            <div style="color:#7ec8ff;font-size:13px;padding:10px 14px;width:96px;flex-shrink:0;border-right:2px solid #333;display:flex;align-items:center;text-shadow:0 0 6px #7ec8ff;">TALK</div>
+            <div style="padding:10px 14px;color:#ccc;font-size:13px;line-height:2.2;">
+              Near a character,<br>press <span style="color:#000;background:#7ec8ff;padding:3px 10px;">SPACE</span>
+            </div>
+          </div>
+
+          <div style="display:flex;border:2px solid #333;">
+            <div style="color:#e37587;font-size:13px;padding:10px 14px;width:96px;flex-shrink:0;border-right:2px solid #333;display:flex;align-items:center;text-shadow:0 0 6px #e37587;">BACK</div>
+            <div style="padding:10px 14px;color:#ccc;font-size:13px;line-height:2.2;">
+              Press <span style="color:#e37587;">BACK</span> in the<br>portal menu.
+            </div>
+          </div>
+
+          <div style="display:flex;border:2px solid #333;grid-column:span 2;">
+            <div style="color:#ffaa00;font-size:13px;padding:10px 14px;width:96px;flex-shrink:0;border-right:2px solid #333;display:flex;align-items:center;text-shadow:0 0 6px #ffaa00;">SOUND</div>
+            <div style="padding:10px 14px;color:#ccc;font-size:13px;line-height:2.2;">
+              Use the <span style="color:#9aff58;">SOUND</span> slider on the console to toggle music.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Social footer -->
+        <div style="margin-top:14px;padding-top:12px;border-top:2px solid #222;display:flex;gap:10px;align-items:center;">
+          <span style="color:#444;font-size:7px;">FIND ME ON</span>
+          <a href="https://twitter.com/Kaustub25522311" class="fa fa-twitter"></a>
+          <a href="https://www.linkedin.com/in/kaustubh-gupta-79a65b21b/" class="fa fa-linkedin"></a>
+        </div>
+
+      </div>
+    </div>
+
   </div>
   <div class="controls">
-   
-    <div class="d-pad"></div>
-    <span class ="retroplay-logo">RETROPAD</span>
-    <div class="buttons">
+    <!-- D-pad: circular retro directional pad -->
+    <div style="position:relative;width:170px;height:170px;flex-shrink:0;">
+      <!-- outer circle -->
+      <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 40% 35%,#2e2e2e,#111);border:4px solid #444;box-shadow:0 4px 12px rgba(0,0,0,0.6),inset 0 2px 4px rgba(255,255,255,0.05);"></div>
+
+      <!-- UP — centered horizontally, sits at top -->
+      <button class="wasd-btn" data-key="w" style="
+        position:absolute;
+        top:6px;left:50%;transform:translateX(-50%);
+        width:42px;height:48px;
+        background:#1e1e1e;color:#ffdd57;
+        border:2px solid #555;border-radius:8px 8px 3px 3px;
+        font-family:'Press Start 2P',cursive;font-size:11px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 3px 6px rgba(0,0,0,0.5);
+        transition:background 0.08s,box-shadow 0.08s;z-index:2;
+      ">▲</button>
+
+      <!-- DOWN — centered horizontally, sits at bottom -->
+      <button class="wasd-btn" data-key="s" style="
+        position:absolute;
+        bottom:6px;left:50%;transform:translateX(-50%);
+        width:42px;height:48px;
+        background:#1e1e1e;color:#ffdd57;
+        border:2px solid #555;border-radius:3px 3px 8px 8px;
+        font-family:'Press Start 2P',cursive;font-size:11px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 3px 6px rgba(0,0,0,0.5);
+        transition:background 0.08s,box-shadow 0.08s;z-index:2;
+      ">▼</button>
+
+      <!-- LEFT — centered vertically, sits at left -->
+      <button class="wasd-btn" data-key="a" style="
+        position:absolute;
+        left:6px;top:50%;transform:translateY(-50%);
+        width:48px;height:42px;
+        background:#1e1e1e;color:#ffdd57;
+        border:2px solid #555;border-radius:8px 3px 3px 8px;
+        font-family:'Press Start 2P',cursive;font-size:11px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 3px 6px rgba(0,0,0,0.5);
+        transition:background 0.08s,box-shadow 0.08s;z-index:2;
+      ">◀</button>
+
+      <!-- RIGHT — centered vertically, sits at right -->
+      <button class="wasd-btn" data-key="d" style="
+        position:absolute;
+        right:6px;top:50%;transform:translateY(-50%);
+        width:48px;height:42px;
+        background:#1e1e1e;color:#ffdd57;
+        border:2px solid #555;border-radius:3px 8px 8px 3px;
+        font-family:'Press Start 2P',cursive;font-size:11px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 3px 6px rgba(0,0,0,0.5);
+        transition:background 0.08s,box-shadow 0.08s;z-index:2;
+      ">▶</button>
+
+      <!-- center nub -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:#222;border:3px solid #444;pointer-events:none;z-index:3;box-shadow:inset 0 2px 4px rgba(0,0,0,0.6);"></div>
     </div>
-</div>
-</div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+      <span class="retroplay-logo">RETROPAD</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <!-- Instructions button -->
+        <button id="instructionsBtn" style="
+          background: #000;
+          color: #ffdd57;
+          border: 3px solid #ffdd57;
+          padding: 9px 18px;
+          font-size: 9px;
+          cursor: pointer;
+          font-family: 'Press Start 2P', cursive;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        ">? HOW TO PLAY</button>
 
-  <div
-    style="
-      background-color: #b6cbce;
-      border:5px solid black;
-      border-radius: 10px;
-    
-      width: 250px;
-      position: fixed;
-      top: 0;
-      right: 30;
-      display: flex;
-    "
-  >
-    <table
-      id="Hello"
-      border="0"
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      bgcolor="#e0f780"
-      align="right"
-    >
-      <tr>
-        <td>
-          <table
-            border="0"
-            cellpadding="5"
-            cellspacing="0"
-            width="90%"
-            align="center"
-          >
-            <tr>
-              <td height="80" align="center" valign="middle">
-                <font face="Verdana" size="6" color=" #d9b1c3;"> NAMASTE </font>
-                <hr color="black" width="200" />
-                <font size="6" color="blue">
-                  <b>ナマステ</b>
-                </font>
-              </td>
-            </tr>
+        <!-- Weather switcher -->
+        <button id="weatherBtn" title="Switch weather" style="
+          background: #000;
+          color: #7ec8ff;
+          border: 3px solid #7ec8ff;
+          padding: 9px 14px;
+          font-size: 16px;
+          cursor: pointer;
+          font-family: 'Press Start 2P', cursive;
+          line-height: 1;
+        ">☀️</button>
 
-            <tr>
-              <td height="10">
-                <font size="2" color="green">
-                  Welcome to my game....
-                  <br />
-                  <br />
-                  <font size="3" color="red"> Rules to play: </font>
-                  <ul>
-                    <li>Use<font size="3" color="red"> w,a,s,d </font>  keys to move around.</li>
-
-                    <li>
-                      <br />
-                      Search for this portal.
-                      <br />
-                      <img src="portal.jpg" width="50" height="60" />
-                    </li>
-
-                    <li>
-                      <br />
-                      Move to portal & press <font size="3" color="red"> q </font>to enter .
-                    </li>
-                    <li>
-                      <br />
-                      Move to people & press<font size="3" color="red"> spacebar</font> to interact.
-                    </li>
-
-                    <li>
-                      <br />
-                      Use back button to return to game.
-                    </li>
-                    <li>
-                      <br />
-                      Click to enable/disable sound. Enjoy the Game!
-                    </li>
-                  </ul>
-                    <div>
-                      <br />
-
-                      <a
-                        href="https://twitter.com/Kaustub25522311"
-                        class="fa fa-twitter"
-                      ></a>
-
-                      <a
-                        href="https://www.linkedin.com/in/kaustubh-gupta-79a65b21b/"
-                        class="fa fa-linkedin"
-                      ></a>
-                    
-                    </div>
-                 
-                  <br />
-                  <br />
-                  </font>
-                
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+        <!-- Sound toggle slider -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <span style="color:#9aff58; font-size:7px; font-family:'Press Start 2P',cursive; letter-spacing:0.1em;">SOUND</span>
+          <label style="display:inline-block; width:52px; height:26px; position:relative; cursor:pointer;">
+            <input type="checkbox" id="soundToggle" style="opacity:0; width:0; height:0; position:absolute;" />
+            <span id="soundSlider" style="
+              position:absolute; inset:0;
+              background:#333;
+              border:3px solid #9aff58;
+              transition: background 0.2s;
+              cursor:pointer;
+            ">
+              <span id="soundKnob" style="
+                position:absolute;
+                top:2px; left:2px;
+                width:16px; height:16px;
+                background:#9aff58;
+                transition: left 0.2s;
+              "></span>
+            </span>
+          </label>
+          <span id="soundLabel" style="color:#555; font-size:6px; font-family:'Press Start 2P',cursive;">OFF</span>
+        </div>
+      </div>
+    </div>
+    <div class="buttons"></div>
   </div>
-  </div>
+</div>
+
+  <script>
+    document.getElementById('instructionsBtn').addEventListener('click', function() {
+      document.getElementById('instructionsPanel').style.display = 'block';
+    });
+    document.getElementById('closeInstructionsPanel').addEventListener('click', function() {
+      document.getElementById('instructionsPanel').style.display = 'none';
+    });
+  </script>
   
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"

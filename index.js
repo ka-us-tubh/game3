@@ -18,36 +18,92 @@ for (let i = 0; i < charactersMapData.length; i += 140) {
   charactersMap.push(charactersMapData.slice(i, 140 + i))
 }
 let currentTime = 0;
-function updateTimeAndVisuals() {
-  // Increase the current time (you can adjust the time increment as needed)
-  currentTime +=1;
-  if (currentTime > 24) {
-    currentTime = 0; // Reset time after a day has passed
+
+// ── Weather modes ──────────────────────────────────────────────
+// modes: 'day' | 'rain' | 'storm' | 'night'
+const weatherModes = ['day', 'rain', 'storm', 'night']
+const weatherEmoji = { day: '☀️', rain: '🌧️', storm: '⛈️', night: '🌙' }
+let weatherIndex = 0
+let weatherMode = 'day'
+// timePhase kept for torch – mirrors weatherMode
+let timePhase = 'day'
+
+function applyWeather(mode) {
+  weatherMode = mode
+  timePhase   = mode === 'night' ? 'night' : (mode === 'storm' ? 'dusk' : 'day')
+
+  switch (mode) {
+    case 'day':
+      canvas.style.filter  = 'none'
+      canvas.style.opacity = '1'
+      // resize rain pool to 0 (gentle, none)
+      raindrops.length = 0
+      break
+    case 'rain':
+      canvas.style.filter  = 'brightness(0.85) saturate(0.8)'
+      canvas.style.opacity = '1'
+      setRainCount(45, false)
+      break
+    case 'storm':
+      canvas.style.filter  = 'brightness(0.55) saturate(0.5) contrast(1.1)'
+      canvas.style.opacity = '1'
+      setRainCount(160, true)
+      scheduleThunder()
+      break
+    case 'night':
+      canvas.style.filter  = 'grayscale(0.65) brightness(0.45)'
+      canvas.style.opacity = '1'
+      raindrops.length = 0
+      break
   }
 
-  // Adjust the background and lighting based on the time of day
-  if (currentTime >= 0 && currentTime < 16) {
-    // Daytime visuals
-     // Hide the day-night canvas during the day
-    canvas.style.opacity = 0.9; // Show the main canvas
-  } 
-  
+  const btn = document.getElementById('weatherBtn')
+  if (btn) btn.textContent = weatherEmoji[mode]
+}
 
-  else if (currentTime >= 16 && currentTime < 20) {
-    // Nighttime visuals
-     // Show the day-night canvas during the night
-    canvas.style.opacity = 0.7; // Reduce the main canvas opacity for a dimming effect
-
-  }
-  else{
-    // Nighttime visuals
-     // Show the day-night canvas during the night
-    canvas.style.opacity = 0.4; 
-    
+function setRainCount(n, heavy) {
+  raindrops.length = 0
+  for (let i = 0; i < n; i++) {
+    const d = new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height), heavy)
+    raindrops.push(d)
   }
 }
 
-// Call updateTimeAndVisuals every second using setInterval
+// Thunder flash
+let thunderTimer = null
+function scheduleThunder() {
+  if (weatherMode !== 'storm') return
+  clearTimeout(thunderTimer)
+  const delay = getRandom(3000, 8000)
+  thunderTimer = setTimeout(() => {
+    triggerThunder()
+    scheduleThunder()
+  }, delay)
+}
+
+function triggerThunder() {
+  if (weatherMode !== 'storm') return
+  const overlay = document.getElementById('overlappingDiv')
+  if (!overlay) return
+  overlay.style.backgroundColor = '#e8f0ff'
+  overlay.style.opacity = '0.7'
+  overlay.style.pointerEvents = 'none'
+  setTimeout(() => { overlay.style.opacity = '0' }, 80)
+  setTimeout(() => {
+    overlay.style.opacity = '0.4'
+    setTimeout(() => { overlay.style.opacity = '0' }, 60)
+  }, 160)
+}
+
+// Weather button cycles through modes
+document.getElementById('weatherBtn').addEventListener('click', () => {
+  clearTimeout(thunderTimer)
+  weatherIndex = (weatherIndex + 1) % weatherModes.length
+  applyWeather(weatherModes[weatherIndex])
+})
+
+// ── old auto-cycle removed, replaced by manual button ──────────
+function updateTimeAndVisuals() {}
 setInterval(updateTimeAndVisuals, 15000);
 
 // Function to generate random number within a range
@@ -56,49 +112,120 @@ function getRandom(min, max) {
 }
 
 class Raindrop {
-  constructor(x, y) {
+  constructor(x, y, heavy = false) {
     this.x = x;
     this.y = y;
-    this.speed = getRandom(7, 10);
-    this.length = getRandom(10, 20);
+    this.heavy = heavy
+    this.speed  = heavy ? getRandom(14, 20) : getRandom(2, 4);
+    this.length = heavy ? getRandom(18, 30) : getRandom(8, 14);
+    this.opacity = heavy ? getRandom(0.4, 0.75) : getRandom(0.2, 0.5);
+    this.drift  = heavy ? getRandom(0.5, 1.5) : 0; // storm diagonal
   }
 
   draw() {
-    c.strokeStyle = "lightgrey";
-    c.lineWidth = 2.5;
+    c.strokeStyle = this.heavy
+      ? `rgba(140,175,215,${this.opacity})`
+      : `rgba(170,200,230,${this.opacity})`;
+    c.lineWidth = this.heavy ? 3.5 : 2.5;
+    c.lineCap = 'round';
     c.beginPath();
     c.moveTo(this.x, this.y);
-    c.lineTo(this.x, this.y + this.length);
+    c.lineTo(this.x + this.drift * 3, this.y + this.length);
     c.stroke();
   }
 
   update() {
     this.y += this.speed;
-    if (this.y - this.length >  Math.random()*100000) {
+    this.x += this.drift;
+    if (this.y - this.length > canvas.height || this.x > canvas.width) {
       this.y = getRandom(-50, -10);
+      this.x = getRandom(0, canvas.width);
     }
     this.draw();
   }
 }
 
-// Array to store raindrops
+// pool starts empty — applyWeather() fills it
 const raindrops = [];
-for (let i = 0; i < 110; i++) {
-  raindrops.push(new Raindrop(getRandom(0, canvas.width), getRandom(0, canvas.height)));
-}
+// boot with day — must be after raindrops is declared
+applyWeather('day')
 
-// Function to draw raindrops
-function drawRaindrops() {
-  raindrops.forEach((raindrop) => {
-    raindrop.draw();
-  });
-}
+// Draw directional torch ray in front of player during night/storm
+function drawTorchEffect() {
+  if (weatherMode === 'day' || weatherMode === 'rain') return
 
-// Function to update raindrops
-function updateRaindrops() {
-  raindrops.forEach((raindrop) => {
-    raindrop.update();
-  });
+  // player center
+  const pw = player.width  || 32
+  const ph = player.height || 48
+  const px = player.position.x + pw / 2
+  const py = player.position.y + ph / 2
+
+  const isNight = weatherMode === 'night'
+  const darkness = isNight ? 'rgba(0,0,15,0.92)' : 'rgba(2,4,18,0.80)'
+
+  // ── direction the character faces ──────────────────────────
+  // lastkey: w=up, s=down, a=left, d=right  (default down)
+  const dirMap = { w: -Math.PI/2, s: Math.PI/2, a: Math.PI, d: 0 }
+  const facing = dirMap[lastkey] ?? Math.PI/2
+
+  const rayLen   = isNight ? 220 : 280   // how far the cone reaches
+  const halfAngle = Math.PI / 5          // 36° half-angle → 72° cone total
+
+  // ── full-screen dark overlay ───────────────────────────────
+  c.save()
+
+  // 1. fill entire screen dark
+  c.fillStyle = darkness
+  c.fillRect(0, 0, canvas.width, canvas.height)
+
+  // 2. cut out the torch cone using destination-out compositing
+  c.globalCompositeOperation = 'destination-out'
+
+  const tipX = px
+  const tipY = py
+  const coneEndX = px + Math.cos(facing) * rayLen
+  const coneEndY = py + Math.sin(facing) * rayLen
+
+  // cone tip gradient — bright at source, fades at tip
+  const grad = c.createRadialGradient(tipX, tipY, 2, tipX, tipY, rayLen)
+  grad.addColorStop(0,   'rgba(0,0,0,1)')    // fully cut out near player
+  grad.addColorStop(0.55,'rgba(0,0,0,0.85)')
+  grad.addColorStop(1,   'rgba(0,0,0,0)')    // fades out at cone tip
+
+  c.fillStyle = grad
+  c.beginPath()
+  c.moveTo(tipX, tipY)
+  c.arc(tipX, tipY, rayLen, facing - halfAngle, facing + halfAngle)
+  c.closePath()
+  c.fill()
+
+  c.globalCompositeOperation = 'source-over'
+  c.restore()
+
+  // ── warm yellowish torch glow layered on top ───────────────
+  c.save()
+  const glowGrad = c.createRadialGradient(tipX, tipY, 0, tipX, tipY, rayLen * 0.9)
+  glowGrad.addColorStop(0,    'rgba(255,210,80,0.28)')   // hot yellow at torch
+  glowGrad.addColorStop(0.25, 'rgba(255,160,40,0.14)')   // orange mid
+  glowGrad.addColorStop(0.6,  'rgba(255,120,20,0.05)')
+  glowGrad.addColorStop(1,    'rgba(0,0,0,0)')
+
+  c.fillStyle = glowGrad
+  c.beginPath()
+  c.moveTo(tipX, tipY)
+  c.arc(tipX, tipY, rayLen * 0.9, facing - halfAngle, facing + halfAngle)
+  c.closePath()
+  c.fill()
+
+  // small warm halo right on the player body (held torch)
+  const halo = c.createRadialGradient(tipX, tipY, 0, tipX, tipY, 36)
+  halo.addColorStop(0,   'rgba(255,230,120,0.35)')
+  halo.addColorStop(0.5, 'rgba(255,180,60,0.12)')
+  halo.addColorStop(1,   'rgba(0,0,0,0)')
+  c.fillStyle = halo
+  c.fillRect(0, 0, canvas.width, canvas.height)
+
+  c.restore()
 }
 
 
@@ -533,18 +660,17 @@ const battle = {
 }
 function animate() {
   const animationId=window.requestAnimationFrame(animate);
-  // Draw and update raindrops
-   c.clearRect(0, 0, canvas.width, canvas.height);
+  c.clearRect(0, 0, canvas.width, canvas.height);
   renderables.forEach((renderable) => {
     renderable.draw()
   })
-  
   foreground.draw();
-   // Draw raindrops separately
-    drawRaindrops();
-  
-    // Update raindrops separately
-    updateRaindrops();
+
+  // rain — subtle, slow
+  raindrops.forEach(r => r.update());
+
+  // night torch/spotlight effect — drawn over everything
+  drawTorchEffect();
   let moving = true;
   player.animate=false
 
@@ -752,16 +878,15 @@ function initBattle(){
 }
 
 //animateBattle()
-document.querySelectorAll('button').forEach((button)=>{
+document.querySelectorAll('#attacksBox button').forEach((button)=>{
   button.addEventListener("click",()=>{
-    //cancelAnimationFrame(battleAnimationId)
-    animate( )
+    animate()
     document.querySelector("#userInterface").style.display="none"
     gsap.to("#overlappingDiv",{
       opacity:0
     })
     battle.initiated = false
-    audio.Map.play()
+    if (soundOn) audio.Map.play()
   })
 })
 let lastkey = "";
@@ -842,17 +967,48 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
-let clicked=false
-window.addEventListener("click",()=>{
-  if (!clicked){
+let soundOn = false
+const soundToggle = document.getElementById('soundToggle')
+const soundKnob = document.getElementById('soundKnob')
+const soundLabel = document.getElementById('soundLabel')
+soundToggle.addEventListener('change', () => {
+  soundOn = soundToggle.checked
+  if (soundOn) {
     audio.Map.play()
-    clicked=true
-
+    soundKnob.style.left = '28px'
+    soundKnob.style.background = '#9aff58'
+    document.getElementById('soundSlider').style.background = '#0a2a10'
+    soundLabel.style.color = '#9aff58'
+    soundLabel.textContent = 'ON'
+  } else {
+    audio.Map.pause()
+    soundKnob.style.left = '2px'
+    soundKnob.style.background = '#9aff58'
+    document.getElementById('soundSlider').style.background = '#333'
+    soundLabel.style.color = '#555'
+    soundLabel.textContent = 'OFF'
   }
-  else {
-    audio.Map.pause();
-    clicked = false;
+})
+
+// WASD on-screen buttons — simulate keydown/keyup events
+document.querySelectorAll('.wasd-btn').forEach((btn) => {
+  const key = btn.dataset.key
+
+  const pressKey = () => {
+    btn.style.background = '#ffdd57'
+    btn.style.color = '#000'
+    window.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
   }
 
+  const releaseKey = () => {
+    btn.style.background = '#2a2a2a'
+    btn.style.color = '#ffdd57'
+    window.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }))
+  }
 
+  btn.addEventListener('mousedown', pressKey)
+  btn.addEventListener('mouseup', releaseKey)
+  btn.addEventListener('mouseleave', releaseKey)
+  btn.addEventListener('touchstart', (e) => { e.preventDefault(); pressKey() }, { passive: false })
+  btn.addEventListener('touchend', (e) => { e.preventDefault(); releaseKey() }, { passive: false })
 })
